@@ -1,10 +1,10 @@
 # Car Charging Reservation System Backend
 
-[![commit-stage-frontend](https://github.com/longhibeck/car-charging-reservation-backend/actions/workflows/commit-stage-backend.yml/badge.svg)](https://github.com/longhibeck/car-charging-reservation-backend/actions/workflows/commit-stage-backend.yml)
+[![commit-stage-backend](https://github.com/longhibeck/car-charging-reservation-backend/actions/workflows/commit-stage-backend.yml/badge.svg)](https://github.com/longhibeck/car-charging-reservation-backend/actions/workflows/commit-stage-backend.yml)
 
 ## Root Repository
 
-- [Car Charging Reservation System](https://github.com/car-charging-reservation-backend)
+- [Car Charging Reservation System](https://github.com/longhibeck/car-charging-reservation-system)
 
 ## License
 
