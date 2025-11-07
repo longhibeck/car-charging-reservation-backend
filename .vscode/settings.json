@@ -1,0 +1,28 @@
+{
+  "python.defaultInterpreterPath": "./backend/.venv/bin/python",
+  "python.analysis.typeCheckingMode": "basic",
+  "[python]": {
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "explicit",
+      "source.organizeImports.ruff": "explicit"
+    },
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  },
+  "ruff.nativeServer": true,
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/.venv": true,
+    "**/.pytest_cache": true,
+    "**/node_modules": true,
+    "**/.git": false
+  },
+  "files.watcherExclude": {
+    "**/.venv/**": true,
+    "**/node_modules/**": true,
+    "**/__pycache__/**": true
+  },
+  "python.terminal.activateEnvironment": true,
+  "python.envFile": "${workspaceFolder}/.env"
+}
