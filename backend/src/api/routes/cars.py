@@ -13,7 +13,7 @@ router = APIRouter(prefix="/cars", tags=["cars"])
 @router.get("/")
 async def get_cars(current_user: User = Depends(get_current_user)):
     """Get current user's cars"""
-    cars = [CarResponse.model_validate_car(car) for car in current_user.cars]
+    cars = [CarResponse.model_validate(car) for car in current_user.cars]
     return {"cars": cars}
 
 
@@ -48,7 +48,7 @@ async def create_car(
         db.commit()
         db.refresh(new_car)
 
-        return CarResponse.model_validate_car(new_car)
+        return CarResponse.model_validate(new_car)
 
     except KeyError as e:
         raise HTTPException(

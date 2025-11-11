@@ -1,0 +1,31 @@
+  
+services:
+
+  backend:
+    build: backend
+    environment:
+      DATABASE_URL: "postgresql://test_user:test_password@database:5432/car_charging"
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+        database:
+          condition: service_healthy
+
+  database:
+    image: postgres:18.0-alpine
+    environment:
+      POSTGRES_DB: car_charging
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test_user -d car_charging"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

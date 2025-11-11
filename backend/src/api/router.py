@@ -8,6 +8,9 @@ router = APIRouter(
     prefix="/api/v1",
     tags=["v1"],
     responses={
+        200: {"description": "Success"},
+        201: {"description": "Created"},
+        204: {"description": "No Content - Successfully removed"},
         404: {"description": "Not found"},
         401: {"description": "Unauthorized - Invalid or missing authentication"},
         422: {"description": "Validation Error - Invalid request data"},

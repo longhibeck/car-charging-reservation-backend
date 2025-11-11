@@ -1,38 +1,52 @@
 import enum
+import uuid
 
-from sqlalchemy import Column, Enum, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
+from sqlalchemy import Enum, ForeignKey, Integer, String
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
 
 
 class Car(Base):
-    __tablename__ = "car"
+    __tablename__ = "cars"
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    name: Mapped[str] = mapped_column(String, nullable=False)
     connectors = relationship(
         "Connector", back_populates="car", cascade="all, delete-orphan"
     )
-    battery_charge_limit = Column(Integer, default=80, nullable=False)
-    battery_size = Column(Integer, nullable=False)
-    max_kw_ac = Column(Integer, nullable=False)
-    max_kw_dc = Column(Integer, nullable=False)
-    user_id = Column(Integer, ForeignKey("user.id"))
-    owner = relationship("User", back_populates="cars")
+    battery_charge_limit: Mapped[int] = mapped_column(
+        Integer, default=80, nullable=False
+    )
+    battery_size: Mapped[int] = mapped_column(Integer, nullable=False)
+    max_kw_ac: Mapped[int] = mapped_column(Integer, nullable=False)
+    max_kw_dc: Mapped[int] = mapped_column(Integer, nullable=False)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id")
+    )
+    owner: Mapped["User"] = relationship("User", back_populates="cars")
 
 
 class ConnectorType(enum.Enum):
-    TYPE_2 = "Type 2"
-    SCHUCO = "Schuko"
+    TYPE_2 = "Type-2"
+    SCHUKO = "Schuko"
     CCS = "CCS"
     CHADEMO = "CHAdeMO"
 
 
 class Connector(Base):
-    __tablename__ = "connector"
+    __tablename__ = "connectors"
 
-    id = Column(Integer, primary_key=True)
-    type = Column(Enum(ConnectorType), nullable=False)
-    car_id = Column(Integer, ForeignKey("car.id"))
-    car = relationship("Car", back_populates="connectors")
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+        unique=True,
+        nullable=False,
+    )
+    type: Mapped[ConnectorType] = mapped_column(Enum(ConnectorType), nullable=False)
+    car_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("cars.id"))
+    car: Mapped["Car"] = relationship("Car", back_populates="connectors")

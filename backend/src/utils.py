@@ -6,9 +6,9 @@ SECRET_KEY = "your-secret-key"
 ALGORITHM = "HS256"
 
 
-def create_token(username: str):
+def create_token(external_user_id: int):
     expire = datetime.now() + timedelta(hours=1)
-    payload = {"sub": username, "exp": expire}
+    payload = {"sub": str(external_user_id), "exp": expire}
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
     return token
 

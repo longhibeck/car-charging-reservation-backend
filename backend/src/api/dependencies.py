@@ -1,5 +1,6 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from database import get_db
@@ -15,14 +16,12 @@ def get_current_user(
 ) -> User:
     """Get current user from JWT token"""
     try:
-        # Check if credentials were provided
         if not credentials:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Authorization header required",
             )
 
-        # Extract token from Bearer scheme
         token = credentials.credentials
         external_user_id = verify_token(token)
 
@@ -31,11 +30,8 @@ def get_current_user(
                 status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
             )
 
-        user = (
-            db.query(User)
-            .filter(User.external_user_id == int(external_user_id))
-            .first()
-        )
+        stmt = select(User).where(User.external_user_id == int(external_user_id))
+        user = db.scalars(stmt).first()
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found"
@@ -43,7 +39,6 @@ def get_current_user(
 
         return user
     except HTTPException:
-        # Re-raise HTTPExceptions as-is
         raise
     except Exception:
         raise HTTPException(

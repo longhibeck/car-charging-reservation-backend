@@ -1,10 +1,13 @@
+import httpx
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from api.dependencies import get_current_user
 from api.models.auth import LoginRequest, LoginResponse, UserResponse
 from database import get_db
 from models.user import User
+from utils import create_token
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
@@ -12,9 +15,6 @@ router = APIRouter(prefix="/auth", tags=["authentication"])
 @router.post("/login", response_model=LoginResponse)
 async def api_login(login_data: LoginRequest, db: Session = Depends(get_db)):
     """API endpoint for login"""
-    import httpx
-
-    from utils import create_token
 
     LOGIN_URL = "https://dummyjson.com/auth/login"
 
@@ -38,9 +38,8 @@ async def api_login(login_data: LoginRequest, db: Session = Depends(get_db)):
                 )
 
             # Find or create user
-            existing_user = (
-                db.query(User).filter(User.external_user_id == external_user_id).first()
-            )
+            stmt = select(User).where(User.external_user_id == external_user_id)
+            existing_user = db.scalars(stmt).first()
 
             if not existing_user:
                 new_user = User(
@@ -56,7 +55,7 @@ async def api_login(login_data: LoginRequest, db: Session = Depends(get_db)):
                     db.commit()
                 user = existing_user
 
-            token = create_token(str(external_user_id))
+            token = create_token(external_user_id)
 
             return LoginResponse(token=token, user=UserResponse.model_validate(user))
         else:

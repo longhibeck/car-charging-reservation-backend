@@ -1,10 +1,10 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import UUID4, BaseModel, ConfigDict
 
 
 class UserResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: int
+    id: UUID4
     username: str
     external_user_id: int
 
