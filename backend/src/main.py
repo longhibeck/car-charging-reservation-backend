@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from starlette.middleware.sessions import SessionMiddleware
 
 from api.router import router as api_router
-from database import create_tables
 
 app = FastAPI(
     title="Car Charging Reservation System - API",
@@ -10,7 +9,6 @@ app = FastAPI(
     version="0.1.0",
 )
 
-create_tables()
 app.add_middleware(SessionMiddleware, secret_key="your-secret-key")
 app.include_router(api_router)
 

@@ -4,7 +4,7 @@ services:
   backend:
     build: backend
     environment:
-      DATABASE_URL: "postgresql://test_user:test_password@database:5432/car_charging"
+      DATABASE_URL: "postgresql+psycopg://test_user:test_password@database:5432/car_charging"
     ports:
       - "8080:8080"
     healthcheck:

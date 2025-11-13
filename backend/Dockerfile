@@ -7,9 +7,13 @@ RUN apt-get update && \
     apt-get install -y curl && \
     rm -rf /var/lib/apt/lists/*
 
+# Set the Python path to include the src directory
+ENV PYTHONPATH="/app/src"
+
 # Copy project files
-COPY pyproject.toml uv.lock ./
-COPY src/ .
+COPY pyproject.toml uv.lock alembic.ini ./
+COPY src/ src/
+COPY migrations/ migrations/
 
 # Install dependencies
 RUN uv sync --frozen --no-dev
