@@ -5,9 +5,9 @@
       "request": "launch",
       "name": "Launch Backend FastAPI App",
       "program": "${workspaceFolder}/backend/src/main.py",
- //     "env": {
- //       "DATABASE_URL": "postgresql://test_user:test_password@localhost:5432/car_charging"
- //     },
+      "env": {
+        "DATABASE_URL": "postgresql+psycopg://test_user:test_password@localhost:5432/car_charging"
+      },
       "args": [
         "--host", "0.0.0.0",
         "--port", "8080"

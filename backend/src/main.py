@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from starlette.middleware.sessions import SessionMiddleware
 
-from api.router import router as api_router
+from src.api.router import router as api_router
 
 app = FastAPI(
     title="Car Charging Reservation System - API",

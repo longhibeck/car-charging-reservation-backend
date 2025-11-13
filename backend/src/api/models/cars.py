@@ -2,7 +2,7 @@ from typing import List
 
 from pydantic import UUID4, BaseModel, ConfigDict
 
-from models.car import ConnectorType
+from src.models.car import ConnectorType
 
 
 class ConnectorResponse(BaseModel):

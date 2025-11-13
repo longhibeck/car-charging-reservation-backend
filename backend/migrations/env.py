@@ -1,20 +1,11 @@
-import sys
-from pathlib import Path
-
-# Add src to path to find models
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-
 import os
 from logging.config import fileConfig
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-# This is the crucial part for autogenerate to work.
-# Your models must be imported so they register themselves with the Base.metadata.
-# Alembic does not automatically discover your model files.
-from database import Base
-from models import car, user  # noqa
+from src.database import Base
+from src.models import car, user  # noqa
 
 SQLALCHEMY_URL = os.environ.get("DATABASE_URL")
 

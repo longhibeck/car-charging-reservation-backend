@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from api.routes.auth import router as auth_router
-from api.routes.cars import router as cars_router
+from src.api.routes.auth import router as auth_router
+from src.api.routes.cars import router as cars_router
 
 # Main API router that combines all sub-routers with versioning
 router = APIRouter(
