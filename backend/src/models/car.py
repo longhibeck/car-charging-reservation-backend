@@ -1,11 +1,18 @@
-import enum
 import uuid
+from enum import StrEnum
 
-from sqlalchemy import Enum, ForeignKey, Integer, String
+from sqlalchemy import ARRAY, Enum, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.database import Base
+
+
+class ConnectorType(StrEnum):
+    TYPE_2 = "Type-2"
+    SCHUKO = "Schuko"
+    CCS = "CCS"
+    CHADEMO = "CHAdeMO"
 
 
 class Car(Base):
@@ -15,8 +22,9 @@ class Car(Base):
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
     name: Mapped[str] = mapped_column(String, nullable=False)
-    connectors = relationship(
-        "Connector", back_populates="car", cascade="all, delete-orphan"
+    connector_types: Mapped[list[ConnectorType]] = mapped_column(
+        ARRAY(Enum(ConnectorType)),
+        nullable=False,
     )
     battery_charge_limit: Mapped[int] = mapped_column(
         Integer, default=80, nullable=False
@@ -28,25 +36,3 @@ class Car(Base):
         UUID(as_uuid=True), ForeignKey("users.id")
     )
     owner: Mapped["User"] = relationship("User", back_populates="cars")
-
-
-class ConnectorType(enum.Enum):
-    TYPE_2 = "Type-2"
-    SCHUKO = "Schuko"
-    CCS = "CCS"
-    CHADEMO = "CHAdeMO"
-
-
-class Connector(Base):
-    __tablename__ = "connectors"
-
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
-        primary_key=True,
-        default=uuid.uuid4,
-        unique=True,
-        nullable=False,
-    )
-    type: Mapped[ConnectorType] = mapped_column(Enum(ConnectorType), nullable=False)
-    car_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("cars.id"))
-    car: Mapped["Car"] = relationship("Car", back_populates="connectors")
