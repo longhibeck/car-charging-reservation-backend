@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from src.api.dependencies import get_current_user
@@ -12,11 +13,15 @@ from src.models.user import User
 router = APIRouter(prefix="/cars", tags=["cars"])
 
 
-@router.get("/")
-async def get_cars(current_user: User = Depends(get_current_user)):
+@router.get("/", response_model=list[CarResponse])
+async def get_cars(
+    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
+):
     """Get current user's cars"""
-    cars = [CarResponse.model_validate(car) for car in current_user.cars]
-    return {"cars": cars}
+    stmt = select(Car).where(Car.user_id == current_user.id)
+    result = db.execute(stmt)
+    cars = result.scalars().all()
+    return [CarResponse.model_validate(car) for car in cars]
 
 
 @router.get("/{car_id}", response_model=CarResponse)
@@ -56,13 +61,11 @@ async def create_car(
         )
 
         db.add(car)
-        db.flush()
         db.commit()
         db.refresh(car)
-
         return CarResponse.model_validate(car)
 
-    except KeyError as e:
+    except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid connector type: {e}",

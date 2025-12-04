@@ -29,7 +29,7 @@ class CarResponse(BaseModel):
 class CarCreateRequest(BaseModel):
     name: str = Field(min_length=1, max_length=120, description="Car name")
     connector_types: set[str] = Field(
-        max_length=1,
+        min_length=1,
         description="List of connector types",
     )
     battery_charge_limit: int = Field(
