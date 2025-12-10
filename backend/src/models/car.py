@@ -23,7 +23,7 @@ class Car(Base):
     )
     name: Mapped[str] = mapped_column(String, nullable=False)
     connector_types: Mapped[list[ConnectorType]] = mapped_column(
-        ARRAY(Enum(ConnectorType)),
+        ARRAY(Enum(ConnectorType, name="connectortype")),
         nullable=False,
     )
     battery_charge_limit: Mapped[int] = mapped_column(
@@ -33,5 +33,5 @@ class Car(Base):
     max_kw_ac: Mapped[int] = mapped_column(Integer, nullable=False)
     max_kw_dc: Mapped[int] = mapped_column(Integer, nullable=False)
     user_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("users.id")
+        UUID(as_uuid=True), ForeignKey("users.id"), nullable=False
     )
