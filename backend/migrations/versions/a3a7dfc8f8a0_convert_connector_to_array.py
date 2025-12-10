@@ -28,7 +28,7 @@ def upgrade() -> None:
         sa.Column(
             "connector_types",
             sa.ARRAY(
-                sa.Enum("Type-2", "Schuko", "CCS", "CHAdeMO", name="connectortype")
+                sa.Enum("Type 2", "Schuko", "CCS", "CHAdeMO", name="connectortype")
             ),
             nullable=False,
         ),
@@ -47,7 +47,7 @@ def downgrade() -> None:
         sa.Column("id", sa.UUID(), autoincrement=False, nullable=False),
         sa.Column(
             "type",
-            postgresql.ENUM("Type-2", "Schuko", "CCS", "CHAdeMO", name="connectortype"),
+            postgresql.ENUM("Type 2", "Schuko", "CCS", "CHAdeMO", name="connectortype"),
             autoincrement=False,
             nullable=False,
         ),
