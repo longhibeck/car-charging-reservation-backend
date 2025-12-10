@@ -1,37 +1,51 @@
+import logging
+
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from src.api.dependencies import get_current_user
-from src.api.models.auth import LoginRequest, LoginResponse, UserResponse
+from src.api.models.auth import (
+    LoginRequest,
+    LoginResponse,
+    UserResponse,
+)
 from src.database import get_db
 from src.models.user import User
-from src.utils import create_token
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
+
+logger = logging.getLogger(__name__)
 
 
 @router.post("/login", response_model=LoginResponse)
 async def api_login(login_data: LoginRequest, db: Session = Depends(get_db)):
     """API endpoint for login"""
 
-    LOGIN_URL = "https://dummyjson.com/auth/login"
+    LOGIN_URL = "https://dummyjson.com/user/login"
 
     try:
         # Authenticate with DummyJSON
         async with httpx.AsyncClient(verify=False) as client:
             response = await client.post(
                 LOGIN_URL,
-                json={"username": login_data.username, "password": login_data.password},
+                headers={"Content-Type": "application/json"},
+                json={
+                    "username": login_data.username,
+                    "password": login_data.password,
+                    "expiresInMins": 30,
+                },
             )
 
         if response.status_code == 200:
             data = response.json()
             external_user_id = data.get("id")
             current_username = data.get("username")
+            access_token = data.get("accessToken")
+            refresh_token = data.get("refreshToken")
 
-            if not external_user_id:
+            if not external_user_id or not access_token:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="Invalid response from login service",
@@ -55,9 +69,23 @@ async def api_login(login_data: LoginRequest, db: Session = Depends(get_db)):
                     db.commit()
                 user = existing_user
 
-            token = create_token(external_user_id)
+            # Try to validate and catch the specific error
+            try:
+                user_response = UserResponse.model_validate(user)
+                logger.info(f"UserResponse validation successful: {user_response}")
+            except Exception as validation_error:
+                logger.error(f"UserResponse validation failed: {validation_error}")
+                # Return error details for debugging
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=f"User validation failed: {str(validation_error)}",
+                )
 
-            return LoginResponse(token=token, user=UserResponse.model_validate(user))
+            return LoginResponse(
+                access_token=access_token,
+                refresh_token=refresh_token,
+                user=user_response,
+            )
         else:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
@@ -70,9 +98,11 @@ async def api_login(login_data: LoginRequest, db: Session = Depends(get_db)):
         )
     except HTTPException:
         raise
-    except Exception:
+    except Exception as e:
+        logger.error(f"Login error: {e}", exc_info=True)
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Login failed"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Login failed: {str(e)}",
         )
 
 
