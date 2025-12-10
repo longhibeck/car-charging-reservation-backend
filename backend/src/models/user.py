@@ -2,7 +2,7 @@ import uuid
 
 from sqlalchemy import Integer, String
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from src.database import Base
 
@@ -18,4 +18,3 @@ class User(Base):
     )
     external_user_id: Mapped[int] = mapped_column(Integer, unique=True)
     username: Mapped[str] = mapped_column(String, unique=True)
-    cars: Mapped[list["Car"]] = relationship("Car", back_populates="owner")

@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from src.api.routes.auth import router as auth_router
 from src.api.routes.cars import router as cars_router
+from src.api.routes.reservations import router as reservations_router
 
 # Main API router that combines all sub-routers with versioning
 router = APIRouter(
@@ -21,3 +22,4 @@ router = APIRouter(
 # Include all route modules
 router.include_router(auth_router)
 router.include_router(cars_router)
+router.include_router(reservations_router)

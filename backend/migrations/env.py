@@ -5,7 +5,7 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 from src.database import Base
-from src.models import car, user  # noqa
+from src.models import car, reservation, user  # noqa
 
 SQLALCHEMY_URL = os.environ.get("DATABASE_URL")
 
