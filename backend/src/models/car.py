@@ -3,7 +3,7 @@ from enum import StrEnum
 
 from sqlalchemy import ARRAY, Enum, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from src.database import Base
 
@@ -35,4 +35,3 @@ class Car(Base):
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("users.id")
     )
-    owner: Mapped["User"] = relationship("User", back_populates="cars")
