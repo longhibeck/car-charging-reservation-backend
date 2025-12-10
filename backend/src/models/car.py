@@ -9,7 +9,7 @@ from src.database import Base
 
 
 class ConnectorType(StrEnum):
-    TYPE_2 = "Type-2"
+    TYPE_2 = "Type 2"
     SCHUKO = "Schuko"
     CCS = "CCS"
     CHADEMO = "CHAdeMO"
