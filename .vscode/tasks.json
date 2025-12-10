@@ -6,16 +6,16 @@
       "type": "shell",
       "dependsOrder": "sequence",
       "dependsOn": [
-        "start-postgres",
+        "start-database",
         "run-migrations"
       ],
       "group": "build"
     },
     {
-      "label": "start-postgres",
+      "label": "start-database",
       "type": "shell",
-      "command": "docker-compose",
-      "args": ["up", "-d", "postgres"],
+      "command": "docker",
+      "args": ["compose", "up", "-d", "database"],
       "options": {
         "cwd": "${workspaceFolder}"
       },
@@ -36,7 +36,10 @@
       "command": "uv",
       "args": ["run", "alembic", "upgrade", "head"],
       "options": {
-        "cwd": "${workspaceFolder}/backend"
+        "cwd": "${workspaceFolder}/backend",
+        "env": {
+            "DATABASE_URL": "postgresql+psycopg://test_user:test_password@localhost:5432/car_charging"
+        }
       },
       "group": "build",
       "presentation": {
@@ -48,10 +51,10 @@
         "clear": false
       },
       "problemMatcher": [],
-      "dependsOn": "wait-for-postgres"
+      "dependsOn": "wait-for-database"
     },
     {
-      "label": "wait-for-postgres",
+      "label": "wait-for-database",
       "type": "shell",
       "command": "sleep",
       "args": ["3"],
@@ -64,8 +67,8 @@
     {
       "label": "docker-compose-down",
       "type": "shell",
-      "command": "docker-compose",
-      "args": ["down"],
+      "command": "docker",
+      "args": ["compose", "down"],
       "options": {
         "cwd": "${workspaceFolder}"
       },
@@ -77,7 +80,10 @@
       "command": "uv",
       "args": ["run", "alembic", "revision", "--autogenerate", "-m", "${input:migrationMessage}"],
       "options": {
-        "cwd": "${workspaceFolder}/backend"
+        "cwd": "${workspaceFolder}/backend",
+        "env": {
+            "DATABASE_URL": "postgresql+psycopg://test_user:test_password@localhost:5432/car_charging"
+        }
       },
       "group": "build",
       "presentation": {
