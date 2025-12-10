@@ -7,9 +7,8 @@ Create Date: 2025-12-05 11:52:59.021386
 """
 from typing import Sequence, Union
 
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = '6e48ae8c35e1'
@@ -27,7 +26,7 @@ def upgrade() -> None:
     sa.Column('end_time', sa.DateTime(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=False),
-    sa.Column('status', sa.Enum('ACTIVE', 'COMPLETED', 'CANCELLED', name='reservationstatus'), nullable=False),
+    sa.Column('status', sa.Enum('active', 'completed', 'cancelled', name='reservationstatus'), nullable=False),
     sa.Column('charging_point_id', sa.String(), nullable=False),
     sa.Column('user_id', sa.UUID(), nullable=False),
     sa.Column('car_id', sa.UUID(), nullable=False),
