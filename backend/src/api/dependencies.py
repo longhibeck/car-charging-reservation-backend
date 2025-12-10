@@ -10,7 +10,7 @@ from src.models.user import User
 security = HTTPBearer(auto_error=False)
 
 
-async def get_current_user(  # ← Make it async
+async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db),
 ) -> User:
@@ -25,9 +25,9 @@ async def get_current_user(  # ← Make it async
         token = credentials.credentials
 
         # Verify token with DummyJSON API
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(verify=False, timeout=10.0) as client:
             response = await client.get(
-                "https://dummyjson.com/user/me",
+                "https://dummyjson.com/auth/me",
                 headers={"Authorization": f"Bearer {token}"},
             )
 
