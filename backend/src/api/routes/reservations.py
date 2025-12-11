@@ -19,9 +19,7 @@ async def check_charging_point_availability(charging_point_id: str) -> dict:
     """Check if charging point is available (external API + existing reservations)"""
 
     # 1. Check external API for charging point status
-    charging_point = await charging_point_service.get_charging_point_status(
-        charging_point_id
-    )
+    charging_point = await charging_point_service.get_charging_point(charging_point_id)
 
     if not charging_point:
         return {"available": False, "reason": "Charging point not found"}
