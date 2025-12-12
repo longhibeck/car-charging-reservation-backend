@@ -2,7 +2,6 @@ from datetime import datetime
 
 from pydantic import UUID4, BaseModel, ConfigDict, Field, model_validator
 
-from src.api.models.cars import CarResponse
 from src.models.reservation import ReservationStatus
 
 
@@ -26,10 +25,11 @@ class ReservationResponse(ReservationBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID4
+    start_time: datetime
+    end_time: datetime
     status: ReservationStatus
     charging_point_id: str
+    user_id: UUID4
+    car_id: UUID4
     created_at: datetime
     updated_at: datetime
-
-    # Related objects
-    car: CarResponse

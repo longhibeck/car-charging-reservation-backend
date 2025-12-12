@@ -41,7 +41,11 @@ class Reservation(Base):
 
     # Reservation details
     status: Mapped[ReservationStatus] = mapped_column(
-        Enum(ReservationStatus, name="reservationstatus"),
+        Enum(
+            ReservationStatus,
+            name="reservationstatus",
+            values_callable=lambda e: [x.value for x in e],
+        ),
         default=ReservationStatus.ACTIVE,
         nullable=False,
     )

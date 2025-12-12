@@ -71,6 +71,7 @@ async def create_reservation(
         raise HTTPException(status_code=400, detail="Minimum 15 minutes")
     if duration_hours > 12:
         raise HTTPException(status_code=400, detail="Maximum 12 hours")
+
     # Check charging point availability
     availability_check = await check_charging_point_availability(
         reservation_data.charging_point_id,
@@ -81,19 +82,27 @@ async def create_reservation(
             status_code=409,  # Conflict
             detail=f"Charging point is not available during the requested time. {availability_check['reason']}",
         )
-    # Create reservation with both user_id and car_id
-    reservation = Reservation(
-        start_time=reservation_data.start_time,
-        end_time=reservation_data.end_time,
-        charging_point_id=reservation_data.charging_point_id,
-        user_id=current_user.id,
-        car_id=car.id,
-    )
-    db.add(reservation)
-    db.commit()
-    db.refresh(reservation)
 
-    return ReservationResponse.model_validate(reservation)
+    # Create reservation with both user_id and car_id
+    try:
+        reservation = Reservation(
+            start_time=reservation_data.start_time,
+            end_time=reservation_data.end_time,
+            charging_point_id=reservation_data.charging_point_id,
+            user_id=current_user.id,
+            car_id=car.id,
+        )
+        db.add(reservation)
+        db.commit()
+        db.refresh(reservation)
+
+        return ReservationResponse.model_validate(reservation)
+
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=500, detail=f"Failed to create reservation: {str(e)}"
+        )
 
 
 @router.get("/", response_model=list[ReservationResponse])
