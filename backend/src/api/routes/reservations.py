@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
@@ -117,3 +118,24 @@ async def get_reservations(
     reservations = db.scalars(stmt).all()
 
     return [ReservationResponse.model_validate(r) for r in reservations]
+
+
+@router.get("/{reservation_id}", response_model=ReservationResponse)
+async def get_reservation_by_id(
+    reservation_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Get a specific reservation by ID"""
+
+    # Query for the reservation
+    stmt = select(Reservation).where(
+        Reservation.id == reservation_id,
+        Reservation.user_id == current_user.id,  # ← Ensure user owns the reservation
+    )
+    reservation = db.scalar(stmt)
+
+    if not reservation:
+        raise HTTPException(status_code=404, detail="Reservation not found")
+
+    return ReservationResponse.model_validate(reservation)
