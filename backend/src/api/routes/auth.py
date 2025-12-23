@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 async def api_login(login_data: LoginRequest, db: Session = Depends(get_db)):
     """API endpoint for login"""
 
-    LOGIN_URL = "https://dummyjson.com/user/login"
+    LOGIN_URL = "https://dummyjson.com/auth/login"
 
     try:
         # Authenticate with DummyJSON
@@ -34,7 +34,7 @@ async def api_login(login_data: LoginRequest, db: Session = Depends(get_db)):
                 json={
                     "username": login_data.username,
                     "password": login_data.password,
-                    "expiresInMins": 30,
+                    "expiresInMins": 60,
                 },
             )
 
